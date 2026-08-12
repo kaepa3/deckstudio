@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>DeckStudio - Web Controller</title>
+  
+  <!-- Google Fonts & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="layout-grid"></i>
+        </div>
+        <div class="brand-text">
+          <h1>DeckStudio</h1>
+          <div class="status-badge" id="statusBadge">
+            <span class="status-dot"></span>
+            <span class="status-text" id="statusText">Connecting...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="active-app-info" id="activeAppContainer">
+        <span class="app-label">ACTIVE APP</span>
+        <div class="app-title-wrapper">
+          <i data-lucide="cpu" id="activeAppIcon"></i>
+          <span class="app-name" id="activeAppName">Detecting...</span>
+        </div>
+      </div>
+
+      <button class="auto-switch-toggle active" id="autoSwitchBtn" title="Auto profile sync with PC">
+        <i data-lucide="zap"></i>
+        <span>AUTO</span>
+      </button>
+    </header>
+
+    <!-- Global Common Controls Section -->
+    <section class="section-container">
+      <div class="section-title">
+        <i data-lucide="sliders"></i>
+        <span>GLOBAL CONTROLS</span>
+      </div>
+      <div class="global-grid" id="globalGrid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- App Profile Controls Section -->
+    <section class="section-container profile-section">
+      <div class="section-header">
+        <div class="section-title">
+          <i data-lucide="layers" id="currentProfileIcon"></i>
+          <span id="currentProfileName">APP CONTROLS</span>
+        </div>
+        <div class="profile-tabs" id="profileTabs">
+          <!-- Profile switcher tabs injected via JS -->
+        </div>
+      </div>
+
+      <div class="app-grid" id="appGrid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

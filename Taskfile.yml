@@ -1,0 +1,37 @@
+# Taskfile.yml for DeckStudio (https://taskfile.dev)
+version: '3'
+
+vars:
+  BINARY: deckstudio.exe
+
+tasks:
+  default:
+    desc: Build the DeckStudio executable
+    cmds:
+      - task: build
+
+  build:
+    desc: Build the DeckStudio executable
+    cmds:
+      - echo " Building {{.BINARY}}..."
+      - go build -buildvcs=false -o {{.BINARY}} .
+      - echo " [Success] Build complete!"
+    sources:
+      - '*.go'
+      - 'config.yaml'
+    generates:
+      - '{{.BINARY}}'
+
+  run:
+    desc: Build and start the DeckStudio server
+    deps: [build]
+    cmds:
+      - echo " Starting DeckStudio Server..."
+      - ./{{.BINARY}}
+
+  clean:
+    desc: Clean the generated executable binary
+    cmds:
+      - echo " Cleaning up built binary..."
+      - powershell -Command "if (Test-Path {{.BINARY}}) { Remove-Item {{.BINARY}} -Force }"
+      - echo " Cleaned!"
