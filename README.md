@@ -48,9 +48,15 @@ task run
 
 ---
 
-## ⚙️ 設定のカスタマイズ (`config.yaml`)
+## ⚙️ 設定ファイルの検索優先順位 (`.deckstudio.yaml`)
 
-`config.yaml` を編集することで、ボタンのラベル、アイコン、ネオンカラー、ショートカットキーを自由に設定できます。
+サーバー起動時、設定ファイル **`.deckstudio.yaml`** は以下の優先順位で自動探索・読み込まれます：
+
+1. **第1候補**: 実行時の直下 (`./.deckstudio.yaml` または `deckstudio.exe` と同じフォルダー)
+2. **第2候補**: ユーザーのホームディレクトリ (`C:\Users\<ユーザー名>\.deckstudio.yaml`)
+3. **第3候補**: ユーザーのホームディレクトリ専用フォルダ (`C:\Users\<ユーザー名>\.deckstudio\.deckstudio.yaml`)
+
+※読み込まれたファイルパスがサーバー起動時のログに表示されます (`📄 Loaded configuration from: ...`)。
 
 ```yaml
 global_buttons:
@@ -81,6 +87,9 @@ profiles:
 ## 🛠️ コマンド一覧 (`Taskfile`)
 
 - `task`: バイナリ (`deckstudio.exe`) をビルド
-- `task run`: ビルド ＋ サーバー起動
+- `task run`: ビルド ＋ **フォアグラウンド（対話モード）**でサーバー起動
+- `task start`: ビルド ＋ **バックグラウンド（ウィンドウ非表示）**で常駐起動 🚀
+- `task status`: バックグラウンドプロセスの実行状態を確認 🔍
+- `task stop`: バックグラウンドプロセスを停止 🛑
 - `task clean`: 生成されたバイナリを削除
 - `task --list`: 利用可能なタスク一覧を表示

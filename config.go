@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -31,24 +34,59 @@ type Config struct {
 	Server        ServerConfig    `yaml:"server" json:"server"`
 	GlobalButtons []ButtonConfig  `yaml:"global_buttons" json:"global_buttons"`
 	Profiles      []ProfileConfig `yaml:"profiles" json:"profiles"`
+	LoadedPath    string          `yaml:"-" json:"-"`
 }
 
-func LoadConfig(path string) (*Config, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
+const ConfigFileName = ".deckstudio.yaml"
+
+func LoadConfig() (*Config, error) {
+	var candidates []string
+
+	// 1. Current working directory
+	candidates = append(candidates, ConfigFileName)
+
+	// 2. Executable directory
+	if exePath, err := os.Executable(); err == nil {
+		exeDir := filepath.Dir(exePath)
+		candidates = append(candidates, filepath.Join(exeDir, ConfigFileName))
+	}
+
+	// 3. User Home Directory (C:\Users\<Username>\.deckstudio.yaml)
+	if homeDir, err := os.UserHomeDir(); err == nil {
+		candidates = append(candidates, filepath.Join(homeDir, ConfigFileName))
+		candidates = append(candidates, filepath.Join(homeDir, ".deckstudio", ConfigFileName))
+	}
+
+	var foundPath string
+	var data []byte
+	var err error
+
+	for _, path := range candidates {
+		if _, statErr := os.Stat(path); statErr == nil {
+			data, err = os.ReadFile(path)
+			if err == nil {
+				foundPath = path
+				break
+			}
+		}
+	}
+
+	if foundPath == "" {
+		return nil, fmt.Errorf("%s not found in candidate locations: %v", ConfigFileName, candidates)
 	}
 
 	var cfg Config
 	err = yaml.Unmarshal(data, &cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse %s: %w", foundPath, err)
 	}
 
+	cfg.LoadedPath = foundPath
 	if cfg.Server.Port == 0 {
 		cfg.Server.Port = 8080
 	}
 
+	log.Printf("📄 Loaded configuration from: %s", foundPath)
 	return &cfg, nil
 }
 

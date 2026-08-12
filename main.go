@@ -105,9 +105,9 @@ func getLocalIP() string {
 }
 
 func main() {
-	cfg, err := LoadConfig("config.yaml")
+	cfg, err := LoadConfig()
 	if err != nil {
-		log.Fatalf("Failed to load config.yaml: %v", err)
+		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
 	hub := newHub()

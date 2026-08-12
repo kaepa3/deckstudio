@@ -3,6 +3,7 @@ version: '3'
 
 vars:
   BINARY: deckstudio.exe
+  PROCESS_NAME: deckstudio
 
 tasks:
   default:
@@ -18,20 +19,42 @@ tasks:
       - echo " [Success] Build complete!"
     sources:
       - '*.go'
-      - 'config.yaml'
+      - '.deckstudio.yaml'
     generates:
       - '{{.BINARY}}'
 
   run:
-    desc: Build and start the DeckStudio server
+    desc: Build and start DeckStudio in foreground (interactive mode)
     deps: [build]
     cmds:
-      - echo " Starting DeckStudio Server..."
+      - echo " Starting DeckStudio Server in foreground..."
       - ./{{.BINARY}}
+
+  start:
+    desc: Build and start DeckStudio in BACKGROUND (hidden window)
+    deps: [build]
+    cmds:
+      - echo " Starting DeckStudio in background..."
+      - powershell -Command "Start-Process -FilePath './{{.BINARY}}' -WindowStyle Hidden"
+      - echo " [Success] DeckStudio is running in background!"
+      - task: status
+
+  stop:
+    desc: Stop background DeckStudio process
+    cmds:
+      - echo " Stopping DeckStudio process..."
+      - powershell -Command "Get-Process -Name '{{.PROCESS_NAME}}' -ErrorAction SilentlyContinue | Stop-Process -Force"
+      - echo " [Success] DeckStudio stopped."
+
+  status:
+    desc: Check if DeckStudio background process is running
+    cmds:
+      - powershell -Command "if (Get-Process -Name '{{.PROCESS_NAME}}' -ErrorAction SilentlyContinue) { Write-Host ' [Status] DeckStudio is RUNNING' -ForegroundColor Green } else { Write-Host ' [Status] DeckStudio is NOT running.' -ForegroundColor Yellow }"
 
   clean:
     desc: Clean the generated executable binary
+    deps: [stop]
     cmds:
       - echo " Cleaning up built binary..."
-      - powershell -Command "if (Test-Path {{.BINARY}}) { Remove-Item {{.BINARY}} -Force }"
+      - powershell -Command "if (Test-Path {{.BINARY}}) { Remove-Item {{.BINARY}} -Force -ErrorAction SilentlyContinue }"
       - echo " Cleaned!"
