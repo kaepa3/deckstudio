@@ -51,6 +51,37 @@ tasks:
     cmds:
       - powershell -Command "if (Get-Process -Name '{{.PROCESS_NAME}}' -ErrorAction SilentlyContinue) { Write-Host ' [Status] DeckStudio is RUNNING' -ForegroundColor Green } else { Write-Host ' [Status] DeckStudio is NOT running.' -ForegroundColor Yellow }"
 
+  install:
+    desc: Install DeckStudio to AppData\Local\DeckStudio
+    deps: [build]
+    cmds:
+      - echo " Installing DeckStudio to LocalAppData..."
+      - powershell -Command "$dir = Join-Path $$env:LOCALAPPDATA 'DeckStudio'; New-Item -ItemType Directory -Force -Path $dir | Out-Null; Copy-Item '{{.BINARY}}' (Join-Path $dir '{{.BINARY}}') -Force; if (-not (Test-Path (Join-Path $dir '.deckstudio.yaml'))) { Copy-Item '.deckstudio.yaml' (Join-Path $dir '.deckstudio.yaml') -Force }; Copy-Item 'public' $dir -Recurse -Force"
+      - echo " [Success] Installed DeckStudio to LocalAppData\DeckStudio!"
+
+  autostart:enable:
+    desc: Register DeckStudio to Windows Startup (starts on boot)
+    deps: [install]
+    cmds:
+      - echo " Registering DeckStudio to Windows Startup..."
+      - powershell -Command "$dir = Join-Path $$env:LOCALAPPDATA 'DeckStudio'; $exe = Join-Path $dir '{{.BINARY}}'; $shortcut = Join-Path $$env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Startup\DeckStudio.lnk'; $s = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcut); $s.TargetPath = $exe; $s.WorkingDirectory = $dir; $s.Save()"
+      - echo " [Success] Added DeckStudio to Startup folder!"
+
+  autostart:disable:
+    desc: Remove DeckStudio from Windows Startup
+    cmds:
+      - echo " Removing DeckStudio from Windows Startup..."
+      - powershell -Command "$shortcut = Join-Path $$env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Startup\DeckStudio.lnk'; if (Test-Path $shortcut) { Remove-Item $shortcut -Force }"
+      - echo " [Success] Removed from Startup."
+
+  uninstall:
+    desc: Uninstall DeckStudio and remove from Startup
+    deps: [stop, 'autostart:disable']
+    cmds:
+      - echo " Uninstalling DeckStudio..."
+      - powershell -Command "$dir = Join-Path $$env:LOCALAPPDATA 'DeckStudio'; if (Test-Path $dir) { Remove-Item $dir -Recurse -Force }"
+      - echo " [Success] Uninstalled successfully."
+
   clean:
     desc: Clean the generated executable binary
     deps: [stop]

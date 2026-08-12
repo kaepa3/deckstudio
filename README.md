@@ -91,5 +91,9 @@ profiles:
 - `task start`: ビルド ＋ **バックグラウンド（ウィンドウ非表示）**で常駐起動 🚀
 - `task status`: バックグラウンドプロセスの実行状態を確認 🔍
 - `task stop`: バックグラウンドプロセスを停止 🛑
+- `task install`: `%LOCALAPPDATA%\DeckStudio` へアプリ一式を固定インストール 📦
+- `task autostart:enable`: **PC起動時（Windowsスタートアップ）に自動常駐起動するよう登録** ⚡
+- `task autostart:disable`: スタートアップ登録を解除 🛑
+- `task uninstall`: アプリのアンインストール＆スタートアップ解除 🗑️
 - `task clean`: 生成されたバイナリを削除
 - `task --list`: 利用可能なタスク一覧を表示
