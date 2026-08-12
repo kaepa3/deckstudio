@@ -1,0 +1,30 @@
+# Executables and Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+deckstudio.exe
+
+# Go Test / Build artifacts
+*.test
+*.out
+*.prof
+
+# Environment / Local settings
+.env
+.env.local
+*.local.yaml
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS System Files
+.DS_Store
+Thumbs.db
+
+# Taskfile Cache
+.task/
